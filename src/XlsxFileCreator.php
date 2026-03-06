@@ -79,7 +79,7 @@ class XlsxFileCreator
         $this->createFile(
             $dir,
             '_rels/.rels',
-            as: '_rel',
+            as: '.rels',
         );
 
         $this->createFile(
