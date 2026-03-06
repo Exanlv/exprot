@@ -1,7 +1,9 @@
 <?php
 
-use Exan\Exprot\Excel;
 use Exan\Exprot\RowResolver;
+use Exan\Exprot\Sheet;
+use Exan\Exprot\XlsxFileCreator;
+use League\Plates\Engine;
 
 require './vendor/autoload.php';
 
@@ -26,6 +28,8 @@ $resolver = new class implements RowResolver {
     }
 };
 
-$excel = new Excel('out.xlsx', $resolver);
-$excel->setTmpDir('./tmp');
-$excel->write();
+$excel = new XlsxFileCreator('./tmp', new Engine(__DIR__ . '/resources/excel'));
+
+$excel->addSheet('my-sheet', new Sheet($resolver));
+
+$excel->create('test');

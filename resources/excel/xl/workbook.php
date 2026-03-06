@@ -2,23 +2,27 @@
 <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
     xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="x15 xr xr6 xr10 xr2"
     xmlns:x15="http://schemas.microsoft.com/office/spreadsheetml/2010/11/main"
     xmlns:xr="http://schemas.microsoft.com/office/spreadsheetml/2014/revision"
     xmlns:xr6="http://schemas.microsoft.com/office/spreadsheetml/2016/revision6"
     xmlns:xr10="http://schemas.microsoft.com/office/spreadsheetml/2016/revision10"
     xmlns:xr2="http://schemas.microsoft.com/office/spreadsheetml/2015/revision2">
-    <fileVersion appName="xl" lastEdited="7" lowestEdited="7" rupBuild="10222" />
-    <workbookPr defaultThemeVersion="202300" />
-    <xr:revisionPtr revIDLastSave="0" documentId="8_{8535574C-496D-694C-9DF5-FB6139E203C1}"
-        xr6:coauthVersionLast="47" xr6:coauthVersionMax="47"
-        xr10:uidLastSave="{00000000-0000-0000-0000-000000000000}" />
+    <fileVersion appName="Calc" />
+    <workbookPr backupFile="false" showObjects="all" date1904="false" />
+    <workbookProtection />
     <bookViews>
-        <workbookView xWindow="1100" yWindow="900" windowWidth="28040" windowHeight="17180"
-            xr2:uid="{F03A5863-A941-4742-9AD1-764387208230}" />
+        <workbookView showHorizontalScroll="true" showVerticalScroll="true" showSheetTabs="true"
+            xWindow="0" yWindow="0" windowWidth="16384" windowHeight="8192" tabRatio="500"
+            firstSheet="0" activeTab="0" />
     </bookViews>
     <sheets>
-        <sheet name="Sheet1" sheetId="1" r:id="rId1" />
+        <sheet name="Sheet1" sheetId="1" state="visible" r:id="rId3" />
     </sheets>
-    <calcPr calcId="181029" />
+    <calcPr iterateCount="100" refMode="A1" iterate="false" iterateDelta="0.001" />
+    <extLst>
+        <ext xmlns:loext="http://schemas.libreoffice.org/"
+            uri="{7626C862-2A13-11E5-B345-FEFF819CDC9F}">
+            <loext:extCalcPr stringRefSyntax="CalcA1" />
+        </ext>
+    </extLst>
 </workbook>
