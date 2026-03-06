@@ -34,7 +34,7 @@ class XlsxFileCreator
 
         $this->createFile(
             $dir,
-            'xl/workbook',
+            '[Content_Types]',
             [
                 'sheets' => array_keys($this->sheets),
             ],
@@ -42,11 +42,13 @@ class XlsxFileCreator
 
         $this->createFile(
             $dir,
-            '[Content_Types]',
+            'xl/workbook',
             [
                 'sheets' => array_keys($this->sheets),
             ],
         );
+
+
 
         $this->createFile(
             $dir,
@@ -61,15 +63,15 @@ class XlsxFileCreator
             'docProps/core',
         );
 
-        $this->createFile(
-            $dir,
-            'xl/theme/theme1',
-        );
+        // $this->createFile(
+        //     $dir,
+        //     'xl/theme/theme1',
+        // );
 
-        $this->createFile(
-            $dir,
-            'xl/styles',
-        );
+        // $this->createFile(
+        //     $dir,
+        //     'xl/styles',
+        // );
 
         $this->createFile(
             $dir,
