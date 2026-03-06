@@ -1,0 +1,10 @@
+{
+    "name": "exan/exprot",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Exan\\Exprot\\": "src/"
+        }
+    },
+    "require": {}
+}
