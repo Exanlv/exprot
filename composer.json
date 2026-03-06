@@ -6,5 +6,7 @@
             "Exan\\Exprot\\": "src/"
         }
     },
-    "require": {}
+    "require-dev": {
+        "symfony/var-dumper": "^8.0"
+    }
 }
