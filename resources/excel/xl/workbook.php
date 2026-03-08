@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \Exan\Exprot\Sheet[] $sheets
+ */
+?>
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
     xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
@@ -16,7 +21,9 @@
             firstSheet="0" activeTab="0" />
     </bookViews>
     <sheets>
-        <sheet name="Sheet1" sheetId="1" state="visible" r:id="rId3" />
+        <?php foreach ($sheets as $i => $sheet): ?>
+        <sheet name="<?= $sheet->name ?>" sheetId="<?= $i + 1 ?>" state="visible" r:id="<?= $sheet->rId ?>" />
+        <?php endforeach; ?>
     </sheets>
     <calcPr iterateCount="100" refMode="A1" iterate="false" iterateDelta="0.001" />
     <extLst>

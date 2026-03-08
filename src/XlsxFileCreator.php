@@ -17,9 +17,9 @@ class XlsxFileCreator
     ) {
     }
 
-    public function addSheet(string $name, Sheet $sheet)
+    public function addSheet(Sheet $sheet)
     {
-        $this->sheets[$name] = $sheet;
+        $this->sheets[] = $sheet;
     }
 
     public function create(string $outFile)
@@ -36,46 +36,8 @@ class XlsxFileCreator
             $dir,
             '[Content_Types]',
             [
-                'sheets' => array_keys($this->sheets),
+                'sheets' => $this->sheets,
             ],
-        );
-
-        $this->createFile(
-            $dir,
-            'xl/workbook',
-            [
-                'sheets' => array_keys($this->sheets),
-            ],
-        );
-
-
-
-        $this->createFile(
-            $dir,
-            'docProps/app',
-            [
-                'sheets' => array_keys($this->sheets),
-            ],
-        );
-
-        $this->createFile(
-            $dir,
-            'docProps/core',
-        );
-
-        // $this->createFile(
-        //     $dir,
-        //     'xl/theme/theme1',
-        // );
-
-        // $this->createFile(
-        //     $dir,
-        //     'xl/styles',
-        // );
-
-        $this->createFile(
-            $dir,
-            'xl/worksheets/sheet1',
         );
 
         $this->createFile(
@@ -88,9 +50,35 @@ class XlsxFileCreator
             $dir,
             'xl/_rels/workbook.xml.rels',
             [
-                'sheets' => array_keys($this->sheets),
+                'sheets' => $this->sheets,
             ],
             'workbook.xml.rels',
+        );
+
+        $this->createFile(
+            $dir,
+            'xl/workbook',
+            [
+                'sheets' => $this->sheets,
+            ],
+        );
+
+        $this->createFile(
+            $dir,
+            'docProps/app',
+            [
+                'sheets' => $this->sheets,
+            ],
+        );
+
+        $this->createFile(
+            $dir,
+            'docProps/core',
+        );
+
+        $this->createFile(
+            $dir,
+            'xl/worksheets/sheet1',
         );
     }
 

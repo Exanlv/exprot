@@ -2,6 +2,7 @@
 
 use Exan\Exprot\RowResolver;
 use Exan\Exprot\Sheet;
+use Exan\Exprot\SheetWriter;
 use Exan\Exprot\XlsxFileCreator;
 use League\Plates\Engine;
 
@@ -30,6 +31,6 @@ $resolver = new class implements RowResolver {
 
 $excel = new XlsxFileCreator('./tmp', new Engine(__DIR__ . '/resources/excel'));
 
-$excel->addSheet('my-sheet', new Sheet($resolver));
+$excel->addSheet(new Sheet('rId3', 'Sheet 1', 'sheet1', new SheetWriter($resolver)));
 
 $excel->create('test');

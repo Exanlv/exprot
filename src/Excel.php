@@ -13,7 +13,7 @@ class Excel
     ) {
     }
 
-    public function addSheet(string $name, Sheet $sheet)
+    public function addSheet(string $name, SheetWriter $sheet)
     {
         $this->sheets[$name] = $sheet;
     }
