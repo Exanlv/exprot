@@ -6,40 +6,62 @@ namespace Exan\Exprot;
 
 class SheetWriter
 {
-    private string $tmpDir;
-
     public function __construct(
         private readonly RowResolver $rowResolver,
     ) {
-        $this->tmpDir = trim(sys_get_temp_dir(), '/\\');
     }
 
-    public function setTmpDir(string $path)
+    public function write(string $directory, string $fileName): void
     {
-        $this->tmpDir = $path;
+        if (!is_dir($directory)) {
+            mkdir($directory, recursive: true);
+        }
+
+        $outFile = $directory . DIRECTORY_SEPARATOR . $fileName;
+
+
+        $file = fopen($outFile, 'w');
+
+        $this->startFile($file);
+        $this->writeRowBatchFiles($file);
+        $this->endFile($file);
     }
 
-    public function write(): void
+    /** @param resource $file */
+    private function startFile(mixed $file): void
     {
-        $this->prepFile();
-        $this->writeRowBatchFiles();
-        $this->combineBatchFiles();
-        $this->zip();
+        fwrite($file, <<<XML
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+            xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+            xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing"
+            xmlns:x14="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main"
+            xmlns:xr2="http://schemas.microsoft.com/office/spreadsheetml/2015/revision2"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+            <sheetData>
+
+        XML);
     }
 
-    private function prepFile()
+    /** @param resource $file */
+    public function endFile(mixed $file): void
     {
+        fwrite($file, <<<XML
 
+            </sheetData>
+        </worksheet>
+        XML);
     }
 
-    private function writeRowBatchFiles()
+    /** @param resource $file */
+    private function writeRowBatchFiles(mixed $file)
     {
         $rowCount = 0;
         $i = 0;
         $rows = $this->rowResolver->getRowBatch($i);
 
         while ($rows !== null) {
-            $this->writeRowBatch($rows, $i, $rowCount);
+            $this->writeRowBatch($file, $rows, $i, $rowCount);
             $rowCount += count($rows);
 
             $i++;
@@ -47,11 +69,9 @@ class SheetWriter
         }
     }
 
-    private function writeRowBatch(array $batch, int $batchNumber, int $baseRowNumber): void
+    /** @param resource $file */
+    private function writeRowBatch(mixed $file, array $batch, int $batchNumber, int $baseRowNumber): void
     {
-        $fileName = $this->tmpDir . '/' . $this->outFile . '-batch-' . ((int) $batchNumber);
-        $file = fopen($fileName, 'w');
-
         $batch = array_values($batch);
 
         foreach ($batch as $i => $row) {
@@ -76,15 +96,5 @@ class SheetWriter
         );
 
         return "<row r=\"$rowi1\">" . $rowXml . "</row>";
-    }
-
-    private function combineBatchFiles()
-    {
-
-    }
-
-    private function zip()
-    {
-
     }
 }

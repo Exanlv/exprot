@@ -9,6 +9,7 @@ use RuntimeException;
 
 class XlsxFileCreator
 {
+    /** @var Sheet[] */
     private array $sheets = [];
 
     public function __construct(
@@ -76,10 +77,9 @@ class XlsxFileCreator
             'docProps/core',
         );
 
-        $this->createFile(
-            $dir,
-            'xl/worksheets/sheet1',
-        );
+        foreach ($this->sheets as $sheet) {
+            $sheet->writer->write($dir . '/xl/worksheets', $sheet->slug . '.xml');
+        }
     }
 
     private function createFile(string $workDir, string $template, array $variables = [], ?string $as = null): void

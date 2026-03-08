@@ -32,5 +32,6 @@ $resolver = new class implements RowResolver {
 $excel = new XlsxFileCreator('./tmp', new Engine(__DIR__ . '/resources/excel'));
 
 $excel->addSheet(new Sheet('rId3', 'Sheet 1', 'sheet1', new SheetWriter($resolver)));
+$excel->addSheet(new Sheet('rId4', 'Sheet 2', 'sheet2', new SheetWriter($resolver)));
 
 $excel->create('test');
