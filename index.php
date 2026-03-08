@@ -52,3 +52,5 @@ $excel->addSheet(new Sheet('rId3', 'Sheet 1', 'sheet1', new SheetWriter($resolve
 // $excel->addSheet(new Sheet('rId4', 'Sheet 2', 'sheet2', new SheetWriter($resolver)));
 
 $excel->create('test');
+
+dump(memory_get_peak_usage(true));
