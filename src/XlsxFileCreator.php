@@ -6,6 +6,7 @@ namespace Exan\Exprot;
 
 use League\Plates\Engine;
 use RuntimeException;
+use ZipArchive;
 
 class XlsxFileCreator
 {
@@ -15,8 +16,7 @@ class XlsxFileCreator
     public function __construct(
         public readonly string $tmpDir,
         public readonly Engine $templatingEngine,
-    ) {
-    }
+    ) {}
 
     public function addSheet(Sheet $sheet)
     {
@@ -25,7 +25,8 @@ class XlsxFileCreator
 
     public function create(string $outFile)
     {
-        $dir = $this->tmpDir . DIRECTORY_SEPARATOR . $outFile;
+        $slug = str_replace(['/', '\\', DIRECTORY_SEPARATOR], '_', $outFile);
+        $dir = $this->tmpDir . '/' . $slug;
 
         if (is_dir($dir)) {
             throw new RuntimeException(sprintf('Unable to create working dir "%s", directory already exists', $dir));
@@ -80,6 +81,10 @@ class XlsxFileCreator
         foreach ($this->sheets as $sheet) {
             $sheet->writer->write($dir . '/xl/worksheets', $sheet->slug . '.xml');
         }
+
+        $this->createZip($outFile, $dir);
+
+        $this->rmDir($dir);
     }
 
     private function createFile(string $workDir, string $template, array $variables = [], ?string $as = null): void
@@ -101,5 +106,62 @@ class XlsxFileCreator
             $dirPath . DIRECTORY_SEPARATOR . $fileName,
             $this->templatingEngine->render($template, $variables)
         );
+    }
+
+    private function createZip(string $outFile, string $dir)
+    {
+        $zip = new ZipArchive();
+
+        $opened = $zip->open($outFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        if ($opened !== true) {
+            throw new RuntimeException(sprintf('Unable to create ZipArchive at %s, error code %d', $outFile, $opened));
+        }
+
+        $this->addFilesToArchive($zip, $dir);
+
+        $zip->close();
+    }
+
+    private function addFilesToArchive(ZipArchive $zip, string $dir, string $basePath = ''): void
+    {
+        $files = scandir($dir);
+
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            $fullPath = $dir . '/' . $file;
+            $relativePath = $basePath . $file;
+
+            if (is_file($fullPath)) {
+                $zip->addFile($fullPath, $relativePath);
+            } elseif (is_dir($fullPath)) {
+                $this->addFilesToArchive($zip, $fullPath, $relativePath . '/');
+            }
+        }
+    }
+
+    private function rmDir(string $dir)
+    {
+        if (!is_dir($dir)) {
+            return false;
+        }
+
+        $items = scandir($dir);
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $path = $dir . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($path)) {
+                $this->rmDir($path);
+            } else {
+                unlink($path);
+            }
+        }
+
+        return rmdir($dir);
     }
 }
