@@ -78,8 +78,8 @@ class SheetWriter
         $rowXml = implode(
             '',
             array_map(
-                function (string $value, int $colNumber) use ($rowNumber, $rpr) {
-                    $value = htmlspecialchars($value, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+                function (?string $value, int $colNumber) use ($rowNumber, $rpr) {
+                    $value = htmlspecialchars($value ?? '', ENT_XML1 | ENT_QUOTES, 'UTF-8');
                     $fullColName = Helper::indexToExcelColumn($colNumber) . ($rowNumber + 1);
 
                     if ($rpr) {
