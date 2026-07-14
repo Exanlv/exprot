@@ -7,7 +7,7 @@ namespace Exan\Exprot;
 class SheetWriter
 {
     public function __construct(
-        private readonly RowResolver $rowResolver,
+        private readonly SheetInterface $sheet,
     ) {
     }
 
@@ -19,11 +19,11 @@ class SheetWriter
 
         $outFile = $directory . DIRECTORY_SEPARATOR . $fileName;
 
-
         $file = fopen($outFile, 'w');
 
         $this->startFile($file);
-        $this->writeRowBatchFiles($file);
+        $this->writeHeaders($file);
+        $this->writeRows($file);
         $this->endFile($file);
     }
 
@@ -54,40 +54,38 @@ class SheetWriter
     }
 
     /** @param resource $file */
-    private function writeRowBatchFiles(mixed $file)
+    private function writeHeaders(mixed $file)
     {
-        $rowCount = 0;
-        $i = 0;
-        $rows = $this->rowResolver->getRowBatch($i);
-
-        while ($rows !== null) {
-            $this->writeRowBatch($file, $rows, $i, $rowCount);
-            $rowCount += count($rows);
-
-            $i++;
-            $rows = $this->rowResolver->getRowBatch($i);
-        }
+        fwrite($file, $this->getRow($this->sheet->getHeaders(), 0, true));
     }
 
     /** @param resource $file */
-    private function writeRowBatch(mixed $file, array $batch, int $batchNumber, int $baseRowNumber): void
+    private function writeRows(mixed $file)
     {
-        $batch = array_values($batch);
-
-        foreach ($batch as $i => $row) {
-            fwrite($file, $this->getRow($row, $baseRowNumber + $i));
+        foreach ($this->sheet->getRows() as $i => $row) {
+            fwrite($file, $this->getRow($row, $i + 1));
         }
     }
 
-    private function getRow(array $row, int $rowNumber): string
+    private function getRow(array $row, int $rowNumber, bool $isHeader = false): string
     {
         $rowi1 = $rowNumber + 1;
+
+        $rpr = $isHeader
+            ? '<rPr><i/></rPr>'
+            : '';
 
         $rowXml = implode(
             '',
             array_map(
-                function (string $value, int $colNumber) use ($rowNumber) {
+                function (string $value, int $colNumber) use ($rowNumber, $rpr) {
+                    $value = htmlspecialchars($value, ENT_XML1 | ENT_QUOTES, 'UTF-8');
                     $fullColName = Helper::indexToExcelColumn($colNumber) . ($rowNumber + 1);
+
+                    if ($rpr) {
+                        return "<c r=\"$fullColName\" t=\"inlineStr\"><is><r>$rpr<t>$value</t></r></is></c>";
+                    }
+
                     return "<c r=\"$fullColName\" t=\"inlineStr\"><is><t>$value</t></is></c>";
                 },
                 $row,

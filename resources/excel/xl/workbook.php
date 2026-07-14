@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \Exan\Exprot\Sheet[] $sheets
+ * @var \Exan\Exprot\SheetInterface[] $sheets
  */
 ?>
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -22,7 +22,7 @@
     </bookViews>
     <sheets>
         <?php foreach ($sheets as $i => $sheet): ?>
-        <sheet name="<?= $sheet->name ?>" sheetId="<?= $i + 1 ?>" state="visible" r:id="<?= $sheet->rId ?>" />
+        <sheet name="<?= $this->e($sheet->getName()) ?>" sheetId="<?= $i + 1 ?>" state="visible" r:id="rId<?= $i + 1 ?>" />
         <?php endforeach; ?>
     </sheets>
     <calcPr iterateCount="100" refMode="A1" iterate="false" iterateDelta="0.001" />

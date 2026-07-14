@@ -10,15 +10,15 @@ use ZipArchive;
 
 class XlsxFileCreator
 {
-    /** @var Sheet[] */
+    /** @var SheetInterface[] */
     private array $sheets = [];
 
     public function __construct(
         public readonly string $tmpDir,
         public readonly Engine $templatingEngine,
-    ) {}
+    ) { }
 
-    public function addSheet(Sheet $sheet)
+    public function addSheet(SheetInterface $sheet)
     {
         $this->sheets[] = $sheet;
     }
@@ -68,9 +68,6 @@ class XlsxFileCreator
         $this->createFile(
             $dir,
             'docProps/app',
-            [
-                'sheets' => $this->sheets,
-            ],
         );
 
         $this->createFile(
@@ -79,7 +76,7 @@ class XlsxFileCreator
         );
 
         foreach ($this->sheets as $sheet) {
-            $sheet->writer->write($dir . '/xl/worksheets', $sheet->slug . '.xml');
+            new SheetWriter($sheet)->write($dir . '/xl/worksheets', $sheet->getSlug() . '.xml');
         }
 
         $this->createZip($outFile, $dir);

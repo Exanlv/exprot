@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \Exan\Exprot\SheetInterface[] $sheets
+ */
+?>
 <?xml version="1.0" encoding="UTF-8"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
     <Default Extension="fntdata" ContentType="application/x-fontdata" />
@@ -7,12 +12,11 @@
     <Default Extension="xml" ContentType="application/xml" />
     <Override PartName="/xl/workbook.xml"
         ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml" />
-    <Override PartName="/xl/theme/theme1.xml"
-        ContentType="application/vnd.openxmlformats-officedocument.theme+xml" />
-    <Override PartName="/xl/styles.xml"
-        ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml" />
-    <Override PartName="/xl/worksheets/sheet1.xml"
-        ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml" />
+
+    <?php foreach ($sheets as $sheet): ?>
+        <Override PartName="/xl/worksheets/<?= $sheet->getSlug() ?>.xml"
+            ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml" />
+    <?php endforeach ?>
     <Override PartName="/docProps/core.xml"
         ContentType="application/vnd.openxmlformats-package.core-properties+xml" />
     <Override PartName="/docProps/app.xml"

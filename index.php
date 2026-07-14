@@ -1,56 +1,52 @@
 <?php
 
-use Exan\Exprot\RowResolver;
-use Exan\Exprot\Sheet;
-use Exan\Exprot\SheetWriter;
+use Exan\Exprot\SheetInterface;
 use Exan\Exprot\XlsxFileCreator;
 use League\Plates\Engine;
 
 require './vendor/autoload.php';
 
-$resolver = new class implements RowResolver {
-    private readonly PDO $connection;
-
-    public function __construct()
-    {
-        $this->connection = new PDO('sqlite:./source.db');
+class MySheet implements SheetInterface
+{
+    public function __construct(
+        private readonly string $name,
+        private readonly string $slug,
+        private readonly array $headers,
+    ) {
     }
 
-    public function getRowBatch(int $i): ?array
+    public function getName(): string
     {
-        dump($i);
+        return $this->name;
+    }
 
-        $limit = 1000;
-        $offset = $limit * $i;
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
 
-        $stmt = $this->connection->prepare('SELECT * FROM users LIMIT :limit OFFSET :offset');
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
+    #[Override]
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
 
-        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if (count($users) === 0) {
-            return null;
-        }
-
-        $data = [];
-
-        foreach ($users as $record) {
-            $data[] = array_map(
-                fn (mixed $data) => (string) $data,
-                array_values($record),
+    public function getRows(): Generator
+    {
+        for ($index = 1; $index <= 50; $index++) {
+            yield array_map(
+                fn (string $header) => sprintf('%s %d', $header, $index),
+                $this->headers
             );
         }
-
-        return $data;
     }
-};
+}
 
-$excel = new XlsxFileCreator(sys_get_temp_dir(), new Engine(__DIR__ . '/resources/excel'));
+$excel = new XlsxFileCreator(__DIR__ . '/kaas', new Engine(__DIR__ . '/resources/excel'));
 
-$excel->addSheet(new Sheet('rId3', 'Sheet 1', 'sheet1', new SheetWriter($resolver)));
-// $excel->addSheet(new Sheet('rId4', 'Sheet 2', 'sheet2', new SheetWriter($resolver)));
+$excel->addSheet(new MySheet('Marketing Leads', 'marketing-leads', ['Name', 'Company', 'Söurce', 'Status', 'Assigned To']));
+$excel->addSheet(new MySheet('Finance Report', 'finance-report', ['Account', 'Category', 'Amoïnt', 'Currency', 'Date']));
+$excel->addSheet(new MySheet('Demo Data', 'demo-data', ['Foo', 'Bar', 'Baz']));
 
 $excel->create('out.xlsx');
 
